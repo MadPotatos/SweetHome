@@ -37,6 +37,7 @@
             app:layout_constraintTop_toTopOf="parent"
              >
 
+
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/etTitle"
                 android:layout_width="match_parent"
@@ -45,7 +46,8 @@
                 android:inputType="textCapWords"
                 android:textColor="@color/primary_text_color"
                 android:textColorHint="@color/secondary_text_color"
-                android:textSize="@dimen/edit_text_text_size" />
+                android:textSize="@dimen/edit_text_text_size"
+                />
         </com.google.android.material.textfield.TextInputLayout>
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilDescription"
@@ -95,7 +97,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tilDate"
-                >
+               >
+
                 <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/etLocation"
                     android:layout_width="match_parent"
