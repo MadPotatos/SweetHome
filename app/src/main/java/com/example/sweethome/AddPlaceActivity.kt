@@ -1,6 +1,7 @@
 package com.example.sweethome
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.ActivityNotFoundException
@@ -11,6 +12,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import com.example.sweethome.databinding.ActivityAddPlaceBinding
 
 import com.karumi.dexter.Dexter
@@ -26,6 +28,25 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
     private var cal = Calendar.getInstance()
     private lateinit var dateSetListener: DatePickerDialog.OnDateSetListener
     private lateinit var binding: ActivityAddPlaceBinding
+    private val getResult =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+                if(it.data != null){
+                    val selectedImageUri: Uri? = it.data?.data
+                    if(selectedImageUri != null){
+                        binding.ivPlaceImage.setImageURI(selectedImageUri)
+                    }else{
+                        Toast.makeText(this,"Image not found",Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    companion object{
+        private const val GALLERY = 1
+        private const val CAMERA = 2
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddPlaceBinding.inflate(layoutInflater)
@@ -77,7 +98,9 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
         withListener(object: MultiplePermissionsListener {
             override fun onPermissionsChecked(report: MultiplePermissionsReport)
             {if(report.areAllPermissionsGranted()){
-                Toast.makeText(this@AddPlaceActivity,"Permission Granted",Toast.LENGTH_SHORT).show()
+                val galleryIntent = Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                getResult.launch(galleryIntent)
+
             }}
             override fun onPermissionRationaleShouldBeShown(permissions: MutableList<PermissionRequest>, token: PermissionToken)
             {
