@@ -6,9 +6,11 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.provider.Settings
 import android.view.View
 import android.widget.Toast
@@ -28,12 +30,12 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
     private var cal = Calendar.getInstance()
     private lateinit var dateSetListener: DatePickerDialog.OnDateSetListener
     private lateinit var binding: ActivityAddPlaceBinding
-    private val getResult =
+    private val getPicture =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
             if(it.resultCode == Activity.RESULT_OK){
                 if(it.data != null){
-                    val selectedImageUri: Uri? = it.data?.data
+                    val selectedImageUri = it.data?.data
                     if(selectedImageUri != null){
                         binding.ivPlaceImage.setImageURI(selectedImageUri)
                     }else{
@@ -42,10 +44,20 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
                 }
             }
         }
-    companion object{
-        private const val GALLERY = 1
-        private const val CAMERA = 2
-    }
+    private val takePicture =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK){
+                if(it.data != null){
+                    val thumbnail = it.data?.extras?.get("data") as Bitmap
+                    if(thumbnail != null){
+                        binding.ivPlaceImage.setImageBitmap(thumbnail)
+                    }else{
+                        Toast.makeText(this,"Image not found",Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,14 +95,35 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
                     _,which ->
                     when(which){
                         0 -> choosePhotoFromGallery()
-                        1 -> Toast.makeText(this@AddPlaceActivity,"Coming soon...",Toast.LENGTH_SHORT).show()
+                        1 -> takePhotoFromCamera()
                     }
                 }
                 pictureDialog.show()
             }
         }
     }
+    private fun takePhotoFromCamera(){
+        Dexter.withContext(this).withPermissions(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA
+        ).withListener(object : MultiplePermissionsListener{
+            override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                if(report.areAllPermissionsGranted()){
+                    val captureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    takePicture.launch(captureIntent)
+                }
+            }
 
+            override fun onPermissionRationaleShouldBeShown(
+                permissions: MutableList<PermissionRequest>?,
+                token: PermissionToken?
+            ) {
+                showRationalDialogForPermissions()
+            }
+
+        }).onSameThread().check()
+    }
     private fun choosePhotoFromGallery() {
         Dexter.withContext(this).withPermissions(
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -99,7 +132,7 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
             override fun onPermissionsChecked(report: MultiplePermissionsReport)
             {if(report.areAllPermissionsGranted()){
                 val galleryIntent = Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                getResult.launch(galleryIntent)
+                getPicture.launch(galleryIntent)
 
             }}
             override fun onPermissionRationaleShouldBeShown(permissions: MutableList<PermissionRequest>, token: PermissionToken)
