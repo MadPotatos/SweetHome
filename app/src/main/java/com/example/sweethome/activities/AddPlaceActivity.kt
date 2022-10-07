@@ -1,4 +1,4 @@
-package com.example.sweethome
+package com.example.sweethome.activities
 
 import android.Manifest
 import android.app.Activity
@@ -37,6 +37,9 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
     private var cal = Calendar.getInstance()
     private lateinit var dateSetListener: DatePickerDialog.OnDateSetListener
     private lateinit var binding: ActivityAddPlaceBinding
+    private var saveImageToInternalStorage: Uri? = null
+    private var mLatitude: Double = 0.0
+    private var mLongitude: Double = 0.0
     private val getPicture =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
@@ -58,9 +61,9 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
                 if(it.data != null){
                     val thumbnail = it.data?.extras?.get("data") as Bitmap
                     if(thumbnail != null){
-                        val uri = saveImageToInternalStorage(thumbnail)
-                        Log.e("Saved Image : ","Path :: $uri")
-                        binding.ivPlaceImage.setImageURI(uri)
+                       saveImageToInternalStorage = saveImageToInternalStorage(thumbnail)
+                        Log.e("Saved Image : ","Path :: $saveImageToInternalStorage")
+                        binding.ivPlaceImage.setImageURI(saveImageToInternalStorage)
 
                     }else{
                         Toast.makeText(this,"Image not found",Toast.LENGTH_SHORT).show()
@@ -88,6 +91,7 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
         }
         binding.etDate.setOnClickListener(this)
         binding.tvAddImage.setOnClickListener(this)
+        binding.btnSave.setOnClickListener(this)
     }
 
     override fun onClick(p0: View?) {
@@ -109,6 +113,9 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
                     }
                 }
                 pictureDialog.show()
+            }
+            binding.btnSave.id ->{
+
             }
         }
     }

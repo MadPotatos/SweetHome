@@ -1,4 +1,4 @@
-package com.example.sweethome
+package com.example.sweethome.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(view)
 
         binding.fabSweetHome.setOnClickListener{
-            val intent = Intent(this,AddPlaceActivity::class.java)
+            val intent = Intent(this, AddPlaceActivity::class.java)
             startActivity(intent)
         }
     }
