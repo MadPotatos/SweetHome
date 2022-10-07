@@ -18,7 +18,9 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import com.example.sweethome.database.DatabaseHandler
 import com.example.sweethome.databinding.ActivityAddPlaceBinding
+import com.example.sweethome.models.SweetHomeModel
 
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -46,6 +48,7 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
             if(it.resultCode == Activity.RESULT_OK){
                 if(it.data != null){
                     val selectedImageUri = it.data?.data
+                    saveImageToInternalStorage = selectedImageUri
                     if(selectedImageUri != null){
                         binding.ivPlaceImage.setImageURI(selectedImageUri)
                     }else{
@@ -60,14 +63,10 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
             if(it.resultCode == Activity.RESULT_OK){
                 if(it.data != null){
                     val thumbnail = it.data?.extras?.get("data") as Bitmap
-                    if(thumbnail != null){
-                       saveImageToInternalStorage = saveImageToInternalStorage(thumbnail)
-                        Log.e("Saved Image : ","Path :: $saveImageToInternalStorage")
-                        binding.ivPlaceImage.setImageURI(saveImageToInternalStorage)
+                    saveImageToInternalStorage = saveImageToInternalStorage(thumbnail)
+                    Log.e("Saved Image : ","Path :: $saveImageToInternalStorage")
+                    binding.ivPlaceImage.setImageURI(saveImageToInternalStorage)
 
-                    }else{
-                        Toast.makeText(this,"Image not found",Toast.LENGTH_SHORT).show()
-                    }
                 }
             }
         }
@@ -89,6 +88,7 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
             cal.set(Calendar.DAY_OF_MONTH,dayOfMonth)
             updateDateInView()
         }
+        updateDateInView()
         binding.etDate.setOnClickListener(this)
         binding.tvAddImage.setOnClickListener(this)
         binding.btnSave.setOnClickListener(this)
@@ -115,7 +115,39 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
                 pictureDialog.show()
             }
             binding.btnSave.id ->{
-
+                when {
+                    binding.etTitle.text.isNullOrEmpty() -> {
+                        Toast.makeText(this,"Please enter title",Toast.LENGTH_SHORT).show()
+                    }
+                    binding.etDescription.text.isNullOrEmpty() -> {
+                        Toast.makeText(this,"Please enter description",Toast.LENGTH_SHORT).show()
+                    }
+                    binding.etLocation.text.isNullOrEmpty() -> {
+                        Toast.makeText(this,"Please enter location",Toast.LENGTH_SHORT).show()
+                    }
+                       saveImageToInternalStorage == null -> {
+                            Toast.makeText(this,"Please select image",Toast.LENGTH_SHORT).show()
+                        }
+                        else -> {
+                            val sweetHomeModel = SweetHomeModel(
+                                0,
+                                binding.etTitle.text.toString(),
+                                binding.etDescription.text.toString(),
+                                saveImageToInternalStorage.toString(),
+                                binding.etDate.text.toString(),
+                                binding.etLocation.text.toString(),
+                                mLatitude,
+                                mLongitude
+                            )
+                            val dbHandler = DatabaseHandler(this)
+                            val addPlace = dbHandler.addPlace(sweetHomeModel)
+                            if(addPlace > 0){
+                                setResult(Activity.RESULT_OK)
+                                Toast.makeText(this,"Place added successfully",Toast.LENGTH_SHORT).show()
+                                finish()
+                            }
+                        }
+                }
             }
         }
     }
