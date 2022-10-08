@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        binding.fabSweetHome.setOnClickListener{
+        binding.fabAddPlace.setOnClickListener{
             val intent = Intent(this, AddPlaceActivity::class.java)
             startActivity(intent)
         }
