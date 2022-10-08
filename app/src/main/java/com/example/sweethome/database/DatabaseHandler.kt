@@ -52,4 +52,28 @@ class DatabaseHandler(context :Context) : SQLiteOpenHelper(context, DATABASE_NAM
         db.close()
         return success
     }
+
+    fun getPlacesList(): ArrayList<SweetHomeModel> {
+        val placeList: ArrayList<SweetHomeModel> = ArrayList()
+        val selectQuery = "SELECT * FROM $TABLE_NAME"
+        val db = this.readableDatabase
+        val cursor = db.rawQuery(selectQuery, null)
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID))
+                val title = cursor.getString(cursor.getColumnIndexOrThrow(KEY_TITLE))
+                val description = cursor.getString(cursor.getColumnIndexOrThrow(KEY_DESCRIPTION))
+                val image = cursor.getString(cursor.getColumnIndexOrThrow(KEY_IMAGE))
+                val date = cursor.getString(cursor.getColumnIndexOrThrow(KEY_DATE))
+                val location = cursor.getString(cursor.getColumnIndexOrThrow(KEY_LOCATION))
+                val latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_LATITUDE))
+                val longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_LONGITUDE))
+                val place = SweetHomeModel(id, title, description, image, date, location, latitude, longitude)
+                placeList.add(place)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        db.close()
+        return placeList
+    }
 }
