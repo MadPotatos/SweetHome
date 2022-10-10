@@ -8,8 +8,12 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
+import android.content.Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
@@ -47,13 +51,15 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
             ActivityResultContracts.StartActivityForResult()) {
             if(it.resultCode == Activity.RESULT_OK){
                 if(it.data != null){
-                    val selectedImageUri = it.data?.data
-                    saveImageToInternalStorage = selectedImageUri
-                    if(selectedImageUri != null){
-                        binding.ivPlaceImage.setImageURI(selectedImageUri)
-                    }else{
-                        Toast.makeText(this,"Image not found",Toast.LENGTH_SHORT).show()
+                    val selectedImageBitmap: Bitmap
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        selectedImageBitmap = ImageDecoder.decodeBitmap( ImageDecoder.createSource(this.contentResolver, it.data?.data!!))
+                    } else {
+                        selectedImageBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, it.data?.data)
+                        Log.e("Saved Image: ","Path :: $saveImageToInternalStorage")
                     }
+                    saveImageToInternalStorage = saveImageToInternalStorage(selectedImageBitmap)
+                    binding.ivPlaceImage.setImageURI(saveImageToInternalStorage)
                 }
             }
         }

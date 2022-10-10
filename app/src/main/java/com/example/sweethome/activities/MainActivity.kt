@@ -4,8 +4,12 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.sweethome.adapters.PlacesAdapter
 import com.example.sweethome.database.DatabaseHandler
 import com.example.sweethome.databinding.ActivityMainBinding
+import com.example.sweethome.models.SweetHomeModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -21,14 +25,24 @@ class MainActivity : AppCompatActivity() {
         }
         getPlacesListFromLocalDB()
     }
+    private fun setupPlacesRecyclerView(placeList: ArrayList<SweetHomeModel>) {
+        binding.rvPlacesList.layoutManager = LinearLayoutManager(this)
+        binding.rvPlacesList.setHasFixedSize(true)
+        val placesAdapter = PlacesAdapter(placeList)
+        binding.rvPlacesList.adapter = placesAdapter
+    }
     private fun getPlacesListFromLocalDB() {
         val dbHandler = DatabaseHandler(this)
         val getPlaceList = dbHandler.getPlacesList()
         if (getPlaceList.size > 0) {
-           for(i in getPlaceList) {
-               val place = "ID: " + i.id + " Title: " + i.title + " Description: " + i.description + " Image: " + i.image + " Date: " + i.date + " Location: " + i.location + " Latitude: " + i.latitude + " Longitude: " + i.longitude
-               Log.e("Place List", place)
-           }
+            binding.rvPlacesList.visibility = View.VISIBLE
+            binding.tvNoPlacesFound.visibility = View.GONE
+            setupPlacesRecyclerView(getPlaceList)
+        } else {
+            binding.rvPlacesList.visibility = View.GONE
+            binding.tvNoPlacesFound.visibility = View.VISIBLE
+
+
         }
     }
 }

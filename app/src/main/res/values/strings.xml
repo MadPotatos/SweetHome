@@ -7,4 +7,5 @@
     <string name="text_add_image">ADD IMAGE</string>
     <string name="btn_text_save">SAVE</string>
     <string name="no_places_available">No Places found yet</string>
+    <string name="item_image_description">image</string>
 </resources>
