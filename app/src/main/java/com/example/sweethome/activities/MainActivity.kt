@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.sweethome.adapters.PlacesAdapter
 import com.example.sweethome.database.DatabaseHandler
@@ -13,6 +14,13 @@ import com.example.sweethome.models.SweetHomeModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private val getList = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == RESULT_OK) {
+            getPlacesListFromLocalDB()
+        }else {
+            Log.e("Activity", "Cancelled or Back Pressed")
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -21,7 +29,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.fabAddPlace.setOnClickListener{
             val intent = Intent(this, AddPlaceActivity::class.java)
-            startActivity(intent)
+            getList.launch(intent)
         }
         getPlacesListFromLocalDB()
     }

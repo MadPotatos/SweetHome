@@ -149,7 +149,6 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
                             val addPlace = dbHandler.addPlace(sweetHomeModel)
                             if(addPlace > 0){
                                 setResult(Activity.RESULT_OK)
-                                Toast.makeText(this,"Place added successfully",Toast.LENGTH_SHORT).show()
                                 finish()
                             }
                         }
