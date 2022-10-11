@@ -20,7 +20,7 @@
         <activity
             android:name=".activities.AddPlaceActivity"
             android:exported="false"
-            android:label="ADD HAPPY PLACE"
+            android:label="ADD PLACE"
             android:screenOrientation="portrait"
             android:theme="@style/CustomNoActionBarTheme" />
         <activity

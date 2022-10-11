@@ -12,5 +12,10 @@ class PlaceDetailActivity : AppCompatActivity() {
         binding = ActivityPlaceDetailBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        setSupportActionBar(binding.toolbarPlaceDetail)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        binding.toolbarPlaceDetail.setNavigationOnClickListener{
+            onBackPressed()
+        }
     }
 }

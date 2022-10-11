@@ -11,6 +11,7 @@ import com.example.sweethome.models.SweetHomeModel
 
 class PlacesAdapter(var list : ArrayList<SweetHomeModel>):
     RecyclerView.Adapter<PlacesAdapter.ViewHolder>() {
+    private var onClickListener: OnClickListener? = null
     class ViewHolder(binding: ItemPlaceBinding): RecyclerView.ViewHolder(binding.root) {
         val placeImage = binding.ivPlaceImage
         val tvTitle = binding.tvTitle
@@ -30,9 +31,20 @@ class PlacesAdapter(var list : ArrayList<SweetHomeModel>):
         holder.placeImage.setImageURI(Uri.parse(model.image))
         holder.tvTitle.text = model.title
         holder.tvDescription.text = model.description
+        holder.itemView.setOnClickListener{
+            if(onClickListener != null){
+                    onClickListener!!.onClick(position,model)
+            }
+        }
     }
 
     override fun getItemCount(): Int {
         return list.size
+    }
+    fun setOnClickListener(onClickListener: OnClickListener){
+        this.onClickListener = onClickListener
+    }
+    interface OnClickListener {
+        fun onClick(position: Int,model: SweetHomeModel)
     }
 }

@@ -38,6 +38,15 @@ class MainActivity : AppCompatActivity() {
         binding.rvPlacesList.setHasFixedSize(true)
         val placesAdapter = PlacesAdapter(placeList)
         binding.rvPlacesList.adapter = placesAdapter
+        placesAdapter.setOnClickListener(object: PlacesAdapter.OnClickListener{
+            override fun onClick(position: Int, model: SweetHomeModel) {
+                val intent = Intent(this@MainActivity,PlaceDetailActivity::class.java)
+                startActivity(intent)
+            }
+
+        })
+
+
     }
     private fun getPlacesListFromLocalDB() {
         val dbHandler = DatabaseHandler(this)
