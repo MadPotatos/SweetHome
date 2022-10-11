@@ -21,6 +21,9 @@ class MainActivity : AppCompatActivity() {
             Log.e("Activity", "Cancelled or Back Pressed")
         }
     }
+    companion object{
+        val EXTRA_PLACE_DETAILS = "extra_place_details"
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -41,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         placesAdapter.setOnClickListener(object: PlacesAdapter.OnClickListener{
             override fun onClick(position: Int, model: SweetHomeModel) {
                 val intent = Intent(this@MainActivity,PlaceDetailActivity::class.java)
+                intent.putExtra(EXTRA_PLACE_DETAILS,model)
                 startActivity(intent)
             }
 

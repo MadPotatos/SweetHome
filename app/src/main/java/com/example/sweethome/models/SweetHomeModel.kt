@@ -1,5 +1,7 @@
 package com.example.sweethome.models
 
+import java.io.Serializable
+
 data class SweetHomeModel(
     val id: Int,
     val title: String,
@@ -9,4 +11,4 @@ data class SweetHomeModel(
     val location: String,
     val latitude: Double,
     val longitude: Double
-)
+): Serializable
