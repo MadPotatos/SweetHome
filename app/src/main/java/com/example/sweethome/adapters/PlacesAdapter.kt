@@ -1,11 +1,15 @@
 package com.example.sweethome.adapters
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.sweethome.activities.AddPlaceActivity
+import com.example.sweethome.activities.MainActivity
 import com.example.sweethome.databinding.ItemPlaceBinding
 import com.example.sweethome.models.SweetHomeModel
 
@@ -40,6 +44,12 @@ class PlacesAdapter(var list : ArrayList<SweetHomeModel>):
 
     override fun getItemCount(): Int {
         return list.size
+    }
+    fun notifyEditItem(activity:Activity, position: Int){
+       val intent = Intent(activity, AddPlaceActivity::class.java)
+        intent.putExtra(MainActivity.EXTRA_PLACE_DETAILS, list[position])
+        activity.startActivity(intent)
+        notifyItemChanged(position)
     }
     fun setOnClickListener(onClickListener: OnClickListener){
         this.onClickListener = onClickListener

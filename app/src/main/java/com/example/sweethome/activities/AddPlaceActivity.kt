@@ -8,8 +8,6 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
-import android.content.Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
-import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -43,9 +41,11 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
     private var cal = Calendar.getInstance()
     private lateinit var dateSetListener: DatePickerDialog.OnDateSetListener
     private lateinit var binding: ActivityAddPlaceBinding
+    private var mPlaceDetails: SweetHomeModel? = null
     private var saveImageToInternalStorage: Uri? = null
     private var mLatitude: Double = 0.0
     private var mLongitude: Double = 0.0
+
     private val getPicture =
         registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()) {
@@ -84,20 +84,36 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
         setContentView(view)
         setSupportActionBar(binding.toolbarAddPlace)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        binding.toolbarAddPlace.setNavigationOnClickListener{
+        binding.toolbarAddPlace.setNavigationOnClickListener {
             onBackPressed()
         }
-        dateSetListener = DatePickerDialog.OnDateSetListener{
-            view,year,month, dayOfMonth ->
+        if (intent.hasExtra(MainActivity.EXTRA_PLACE_DETAILS)) {
+            mPlaceDetails =
+                intent.getSerializableExtra(MainActivity.EXTRA_PLACE_DETAILS) as SweetHomeModel
+        }
+        dateSetListener = DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
             cal.set(Calendar.YEAR, year)
             cal.set(Calendar.MONTH, month)
-            cal.set(Calendar.DAY_OF_MONTH,dayOfMonth)
+            cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             updateDateInView()
         }
         updateDateInView()
+        if (mPlaceDetails != null) {
+            supportActionBar?.title = "Edit Place"
+            binding.etTitle.setText(mPlaceDetails!!.title)
+            binding.etDescription.setText(mPlaceDetails!!.description)
+            binding.etDate.setText(mPlaceDetails!!.date)
+            binding.etLocation.setText(mPlaceDetails!!.location)
+            mLatitude = mPlaceDetails!!.latitude
+            mLongitude = mPlaceDetails!!.longitude
+            saveImageToInternalStorage = Uri.parse(mPlaceDetails!!.image)
+            binding.ivPlaceImage.setImageURI(saveImageToInternalStorage)
+            binding.btnSave.text = "UPDATE"
+        }
         binding.etDate.setOnClickListener(this)
         binding.tvAddImage.setOnClickListener(this)
         binding.btnSave.setOnClickListener(this)
+
     }
 
     override fun onClick(p0: View?) {

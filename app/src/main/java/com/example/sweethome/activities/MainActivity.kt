@@ -6,11 +6,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.sweethome.adapters.PlacesAdapter
 import com.example.sweethome.database.DatabaseHandler
 import com.example.sweethome.databinding.ActivityMainBinding
 import com.example.sweethome.models.SweetHomeModel
+import com.example.sweethome.utilz.SwipeToDeleteCallback
+import com.example.sweethome.utilz.SwipeToEditCallback
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -49,7 +52,15 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+        val editSwipeHandler = object : SwipeToEditCallback(this) {
+            override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {
+                val adapter = binding.rvPlacesList.adapter as PlacesAdapter
+                adapter.notifyEditItem(this@MainActivity,viewHolder.adapterPosition)
 
+            }
+        }
+        val editItemTouchHelper = ItemTouchHelper(editSwipeHandler)
+        editItemTouchHelper.attachToRecyclerView(binding.rvPlacesList)
 
     }
     private fun getPlacesListFromLocalDB() {
