@@ -152,7 +152,7 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
                         }
                         else -> {
                             val sweetHomeModel = SweetHomeModel(
-                                0,
+                                if (mPlaceDetails == null) 0 else mPlaceDetails!!.id,
                                 binding.etTitle.text.toString(),
                                 binding.etDescription.text.toString(),
                                 saveImageToInternalStorage.toString(),
@@ -162,11 +162,20 @@ class AddPlaceActivity : AppCompatActivity(),View.OnClickListener {
                                 mLongitude
                             )
                             val dbHandler = DatabaseHandler(this)
-                            val addPlace = dbHandler.addPlace(sweetHomeModel)
-                            if(addPlace > 0){
-                                setResult(Activity.RESULT_OK)
-                                finish()
+                            if (mPlaceDetails == null) {
+                                val addSweetHomeModel = dbHandler.addPlace(sweetHomeModel)
+                                if (addSweetHomeModel > 0) {
+                                    setResult(Activity.RESULT_OK)
+                                    finish()
+                                }
+                            } else {
+                                val updateSweetHomeModel = dbHandler.updatePlace(sweetHomeModel)
+                                if (updateSweetHomeModel > 0) {
+                                    setResult(Activity.RESULT_OK)
+                                    finish()
+                                }
                             }
+
                         }
                 }
             }

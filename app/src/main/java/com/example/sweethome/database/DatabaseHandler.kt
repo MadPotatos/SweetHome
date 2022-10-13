@@ -38,6 +38,20 @@ class DatabaseHandler(context :Context) : SQLiteOpenHelper(context, DATABASE_NAM
         db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
         onCreate(db)
     }
+    fun updatePlace(place: SweetHomeModel) : Int {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(KEY_TITLE, place.title)
+        contentValues.put(KEY_DESCRIPTION, place.description)
+        contentValues.put(KEY_IMAGE, place.image)
+        contentValues.put(KEY_DATE, place.date)
+        contentValues.put(KEY_LOCATION, place.location)
+        contentValues.put(KEY_LATITUDE, place.latitude)
+        contentValues.put(KEY_LONGITUDE, place.longitude)
+        val success = db.update(TABLE_NAME, contentValues, KEY_ID +"=" + place.id, null)
+        db.close()
+        return success
+    }
     fun addPlace(place: SweetHomeModel) : Long {
         val db = this.writableDatabase
         val contentValues = ContentValues()
